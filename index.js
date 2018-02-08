@@ -25,9 +25,9 @@ bot.on('message', message => {
         // get sender's member
         let member = message.member;
         switch(text) {
-            case "frontend":
-            case "backend":
-            case "fullstack":
+            case "role frontend":
+            case "role backend":
+            case "role fullstack":
                 response = "You are now set as a " + text + " developer, " + message.author;
                 let role = message.guild.roles.find("name", text);
                 member.addRole(role);
