@@ -28,8 +28,9 @@ bot.on('message', message => {
             case "role frontend":
             case "role backend":
             case "role fullstack":
-                response = "You are now set as a " + text + " developer, " + message.author;
-                let role = message.guild.roles.find("name", text);
+                let 
+                response = "You are now set as a " + text.substring(5) + " developer, " + message.author;
+                let role = message.guild.roles.find("name", text.substring(5));
                 member.addRole(role);
                 break;
         }
