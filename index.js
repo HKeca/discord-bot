@@ -22,7 +22,7 @@ bot.on('message', message => {
 
         var response = ''; // init response
         // get the Member who sent the message.
-        let member = message.member;
+        let member = message.member;        
 
         // Roles (this is so we can toggle between them)
         const frontend_role = message.guild.roles.find("name", "frontend");
@@ -32,15 +32,43 @@ bot.on('message', message => {
         // Switching through all strings after the prefix
         // e.g ![role frontend]    whatever is in the [] is the string we're switching through.
         switch(text) {
+            case "role":
+                response = "Set your server role " + message.author + " \n ``!role <frontend|backend|fullstack>``";
+                break;
             // Role prefix for frontend/backend.
             case "role frontend":
             case "role backend":
             case "role fullstack":
-                let role_name = text.substring(5); // !role [frontend/backend/fullstack] - this gets the role name
-                response = "You are now set as a " + role_name + " developer, " + message.author; // write a response
-                let role = message.guild.roles.find("name", role_name); // find the proper Role matching the role_name
-                member.removeRoles([frontend_role, backend_role, fullstack_role]); // remove all 3 roles then add the correct one
-                member.addRole(role); // add the member to the role.
+
+                try {
+                    let role_name = text.substring(5); // !role [frontend/backend/fullstack] - this gets the role name
+                    let role = message.guild.roles.find("name", role_name); // find the proper Role matching the role_name          
+                    
+                    let llcRoles = [frontend_role, backend_role, fullstack_role];
+
+                    // Check whether role exists on the server. Add roles if doesnt exist.
+                    if (!member.roles.array().includes(role)) {
+                        member.addRole(role);
+                    }
+
+                    // Remove other llcRoles form the member.
+                    llcRoles.forEach(function(llcRole) {
+                        if (llcRole != role)
+                            if (member.roles.array().includes(llcRole)) {
+                                console.log("Role found : " + llcRole.name);
+                                member.removeRole(llcRole);
+                                console.log("Role removed : " + llcRole.name);
+                            }
+                    });
+
+                    member.addRole(role); // add the member to the role.
+
+                    response = "You are now set as a " + role_name + " developer, " + message.author; // write a response    
+                } catch (error) {
+                    console.log(error);
+                    response = "Couldn't set roles for " + message.author; // error response    
+                }
+
                 break;
 
             // Display all current projects by the LLC community
@@ -55,6 +83,8 @@ bot.on('message', message => {
             case "live":
                 response = "You can find LILDINKED's Twitch here: https://www.twitch.tv/lildinked";
                 break;
+            default:
+                response = "Invalid command! " + message.author;
         }
 
         // Reply to the user's message with our response
