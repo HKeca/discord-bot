@@ -13,6 +13,8 @@ You must have node.js installed to run and test the bot. You must also have disc
 
 `npm install --save discord.js`
 
+Make sure you rename 'config-sample.json' to 'config.json' in your actual project.
+
 If you have any problems/questions feel free to ask @MattL019 in the discord and anyone else about how to set things up.
 
 ### Discord

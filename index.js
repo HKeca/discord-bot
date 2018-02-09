@@ -24,7 +24,7 @@ bot.on('message', message => {
         // get the Member who sent the message.
         let member = message.member;
 
-        // Roles
+        // Roles (this is so we can toggle between them)
         const frontend_role = message.guild.roles.find("name", "frontend");
         const backend_role = message.guild.roles.find("name", "backend");
         const fullstack_role = message.guild.roles.find("name", "fullstack");
@@ -39,7 +39,7 @@ bot.on('message', message => {
                 let role_name = text.substring(5); // !role [frontend/backend/fullstack] - this gets the role name
                 response = "You are now set as a " + role_name + " developer, " + message.author; // write a response
                 let role = message.guild.roles.find("name", role_name); // find the proper Role matching the role_name
-                member.removeRoles([frontend_role, backend_role, fullstack_role]);
+                member.removeRoles([frontend_role, backend_role, fullstack_role]); // remove all 3 roles then add the correct one
                 member.addRole(role); // add the member to the role.
                 break;
 
