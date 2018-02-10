@@ -1,15 +1,53 @@
 // Import discord.js module
 const discord = require('discord.js');
-// Create an instance of Discord that will use to control the bot
-const bot = new discord.Client();
-// Require config json
+const winston = require('winston');
+const fs = require('fs');
+
+// Require Config
 const config = require('./config.json');
 
+// Create an instance of Discord that will use to control the bot
+const bot = new discord.Client();
 
-bot.on('ready', () => {
-    console.log("LLC Bot successfully started."); // message to run on startup
+// Init Logging 
+const logDir = 'logs'; //Move to config later
+
+// Create the log directory if it does not exist
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+}
+const tsFormat = () => (new Date()).toLocaleTimeString();
+
+const logger = new (winston.Logger)({
+  transports: [
+    // colorize the output to the console
+    new (winston.transports.Console)({
+        timestamp: tsFormat,
+        colorize: true,
+        level: 'info'
+    }),
+    new (winston.transports.File)({
+        filename: `${logDir}/bot_output.log`,
+        timestamp: tsFormat,
+        level: 'debug'
+    })
+  ]
 });
 
+// Logging
+bot.on('disconnect', function() {
+    logger.info('LLC Bot has Disconnected.')
+})
+
+bot.on('error', function(err) {
+    logger.error(err)
+})
+
+bot.on('ready', () => {
+    logger.log('info', 'LLC Bot has been Sucessfully Started');
+});
+
+// Modules
 // listen to messages sent to server (every message a user sends in the server)
 bot.on('message', message => {
     // So the bot doesn't reply to itself
