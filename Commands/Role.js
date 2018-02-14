@@ -6,22 +6,7 @@ class Role extends Command
         super("role", "A command to change your role.");
     }
 
-    /**
-     * Setup roles
-     */
     setup() {}
-
-    /**
-     * Make sure the user only has one llc dev role
-     * @param  {Member} author
-     * @param  {Role} newRole
-     */
-    cleanRoles(author, newRole) {
-        this.roles.forEach((role) => {
-            if (role !== newRole && this.roles.includes(role))
-                author.removeRole(role);
-        });
-    }
 
     /**
      * Add new role
@@ -31,6 +16,9 @@ class Role extends Command
      */
     tryAdd(author, role) {
         return new Promise((resolve, reject) => {
+            if (this.roles[role] == undefined)
+                return reject("Unknown role");
+
             author.addRole(this.roles[role])
                 .then(member => {
                     resolve(role);

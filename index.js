@@ -11,7 +11,7 @@ const bot = new discord.Client();
 const CommandManager = new (require('./Commands/CommandManager'))();
 CommandManager.setup();
 
-const logger = require('./Logger');
+const logger = require('./logger');
 
 // Logging
 bot.on('disconnect', function() {

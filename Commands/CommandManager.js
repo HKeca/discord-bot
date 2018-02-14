@@ -1,5 +1,5 @@
-const Role = new (require('./Role'))();
-const Twitch = new (require('./Twitch'))();
+const Role = new (require('./Role'));
+const Twitch = new (require('./Twitch'));
 const Projects = new (require('./Projects'));
 
 class CommandManager
@@ -23,7 +23,7 @@ class CommandManager
         var command = false;
 
         this.commands.forEach((cmd) => {
-            if (cmd.name == query) {
+            if (cmd.name == query || cmd.alias.includes(query)) {
                 command = cmd;
             }
         });
