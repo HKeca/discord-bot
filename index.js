@@ -1,7 +1,5 @@
 // Import discord.js module
 const discord = require('discord.js');
-const winston = require('winston');
-const fs = require('fs');
 
 // Require Config
 const config = require('./config.json');
@@ -9,30 +7,11 @@ const config = require('./config.json');
 // Create an instance of Discord that will use to control the bot
 const bot = new discord.Client();
 
-// Init Logging 
-const logDir = 'logs'; //Move to config later
+// Command Manager
+const CommandManager = new (require('./Commands/CommandManager'))();
+CommandManager.setup();
 
-// Create the log directory if it does not exist
-if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir);
-}
-const tsFormat = () => (new Date()).toLocaleTimeString();
-
-const logger = new (winston.Logger)({
-  transports: [
-    // colorize the output to the console
-    new (winston.transports.Console)({
-        timestamp: tsFormat,
-        colorize: true,
-        level: 'info'
-    }),
-    new (winston.transports.File)({
-        filename: `${logDir}/bot_output.log`,
-        timestamp: tsFormat,
-        level: 'debug'
-    })
-  ]
-});
+const logger = require('./logger');
 
 // Logging
 bot.on('disconnect', function() {
@@ -47,88 +26,35 @@ bot.on('ready', () => {
     logger.log('info', 'LLC Bot has been Sucessfully Started');
 });
 
-// Modules
-// listen to messages sent to server (every message a user sends in the server)
+// Message event
 bot.on('message', message => {
     // So the bot doesn't reply to itself
     if (message.author.bot) return;
 
     // Check if the message starts with the prefix
     if (message.content.indexOf(config.prefix) === 0) {
-        // Get the user's message excluding the prefix, and lower case it to avoid CaSe SeNsItIvE
-        var text = message.content.substring(1).toLowerCase();
+        // user input
+        let input = message.content.substring(1).toLowerCase();
 
-        var response = ''; // init response
-        // get the Member who sent the message.
-        let member = message.member;        
+        // Command without params
+        let cmd = input.split(' ')[0];
 
-        // Roles (this is so we can toggle between them)
-        const frontend_role = message.guild.roles.find("name", "frontend");
-        const backend_role = message.guild.roles.find("name", "backend");
-        const fullstack_role = message.guild.roles.find("name", "fullstack");
+        let command = CommandManager.match(cmd);
+            
+        if (command == false)
+            return logger.error(cmd + ' command not found');
 
-        // Switching through all strings after the prefix
-        // e.g ![role frontend]    whatever is in the [] is the string we're switching through.
-        switch(text) {
-            case "role":
-                response = "Set your server role " + message.author + " \n ``!role <frontend|backend|fullstack>``";
-                break;
-            // Role prefix for frontend/backend.
-            case "role frontend":
-            case "role backend":
-            case "role fullstack":
-
-                try {
-                    let role_name = text.substring(5); // !role [frontend/backend/fullstack] - this gets the role name
-                    let role = message.guild.roles.find("name", role_name); // find the proper Role matching the role_name          
-                    
-                    let llcRoles = [frontend_role, backend_role, fullstack_role];
-
-                    // Check whether role exists on the server. Add roles if doesnt exist.
-                    if (!member.roles.array().includes(role)) {
-                        member.addRole(role);
-                    }
-
-                    // Remove other llcRoles form the member.
-                    llcRoles.forEach(function(llcRole) {
-                        if (llcRole != role)
-                            if (member.roles.array().includes(llcRole)) {
-                                console.log("Role found : " + llcRole.name);
-                                member.removeRole(llcRole);
-                                console.log("Role removed : " + llcRole.name);
-                            }
-                    });
-
-                    member.addRole(role); // add the member to the role.
-
-                    response = "You are now set as a " + role_name + " developer, " + message.author; // write a response    
-                } catch (error) {
-                    console.log(error);
-                    response = "Couldn't set roles for " + message.author; // error response    
-                }
-
-                break;
-
-            // Display all current projects by the LLC community
-            case "projects":
-                response = "```\nCurrent projects\n================\n1. Discord Bot\nhttps://github.com/MattL019/discord-bot```";
-                break;
-
-
-            // Commands to redirect to LILDINKED's live stream.
-            case "stream":
-            case "twitch":
-            case "live":
-                response = "You can find LILDINKED's Twitch here: https://www.twitch.tv/lildinked";
-                break;
-            default:
-                response = "Invalid command! " + message.author;
-        }
-
-        // Reply to the user's message with our response
-        if(response !== '') message.channel.send(response);
+        // Each command is ran with messsage context and user input
+        command.run(message, input)
+            .then(response => {
+                message.channel.send(response);
+            })
+            .catch(err => {
+                logger.error(err);
+            });
+            
     }
 });
 
-// log the bot in. (never remove this)
+// Run bot.
 bot.login(config.token);
