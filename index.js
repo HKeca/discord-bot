@@ -41,8 +41,10 @@ bot.on('message', message => {
 
         let command = CommandManager.match(cmd);
             
-        if (command == false)
-            return logger.error(cmd + ' command not found');
+        if (command.default === true){
+            return message.channel.send(command.answer);
+        }
+
 
         // Each command is ran with messsage context and user input
         command.run(message, input)
