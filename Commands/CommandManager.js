@@ -2,8 +2,7 @@ const Role = new (require('./Role'));
 const Twitch = new (require('./Twitch'));
 const Projects = new (require('./Projects'));
 
-class CommandManager
-{
+class CommandManager {
     constructor() {
         this.commands = [
             /* Initialize Commands */
@@ -16,13 +15,17 @@ class CommandManager
     /**
      * Find command
      * @param  {string} query
-     * 
+     *
      * @return {Command} command
      */
     match(query) {
-        var command = false;
-
+        let command = false;
+        let defaultAnswer = {
+            default: true,
+            answer: 'Looks like you are lost, try the following commands:```\n'
+        }
         this.commands.forEach((cmd) => {
+            defaultAnswer.answer += '!' + cmd.name+ ' - ' + cmd.cmdDescription + ' \n';
             if (cmd.name == query || cmd.alias.includes(query)) {
                 command = cmd;
             }
@@ -30,8 +33,10 @@ class CommandManager
 
         if (command)
             return command;
-        else
-            return false;
+        else{
+            defaultAnswer.answer += '```'
+            return defaultAnswer;
+        }
     }
 
     /**
@@ -41,7 +46,7 @@ class CommandManager
         this.commands.forEach((cmd) => {
             try {
                 cmd.setup();
-            } catch(error) {
+            } catch (error) {
                 throw error;
             }
         });
