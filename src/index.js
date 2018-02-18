@@ -39,23 +39,21 @@ bot.on('message', async (message) => {
 
     // command without params
     const command = args.shift().toLowerCase();
+    
+    const cmdList = await CommandManager.listCommands(bot);
 
-    const commandExists = CommandManager.match(command);
-            
-    if (!commandExists) {
-        const cmdList = await CommandManager.listCommands(bot);
+    if (CommandManager.match(command)) {
+        CommandManager.match(command).run(message, args).then((response) => {
+            return message.channel.send(response);
+        }).catch((err) => {
+            Logger.error(err);
+        });
+    } else {
         cmdList.forEach((embed) => {
             message.channel.send(embed);
         });
         return;
     }
-        
-    // Each command is run with messsage context and user input
-    command.run(message, args).then((response) => {
-        message.channel.send(response);
-    }).catch((err) => {
-        Logger.error(err);
-    });
 });
 
 // Run bot.
