@@ -11,19 +11,19 @@ const bot = new Discord.Client();
 const CommandManager = new (require('./Commands/CommandManager.js'))();
 CommandManager.setup();
 
-const logger = require('./helpers/logger.js');
+const Logger = require('./helpers/Logger.js');
 
 // Logging
 bot.on('disconnect', () => {
-    logger.info('LLC Bot has disconnected.')
+    Logger.info('LLC Bot has disconnected.')
 })
 
 bot.on('error', (err) => {
-    logger.error(err)
+    Logger.error(err)
 })
 
 bot.on('ready', () => {
-    logger.log('info', 'LLC Bot has been successfully started');
+    Logger.log('info', 'LLC Bot has been successfully started');
 });
 
 // Message event
@@ -51,7 +51,7 @@ bot.on('message', (message) => {
     command.run(message, args).then((response) => {
         message.channel.send(response);
     }).catch((err) => {
-        logger.error(err);
+        Logger.error(err);
     });
 });
 

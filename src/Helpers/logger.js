@@ -2,7 +2,7 @@ const winston = require('winston');
 const fs = require('fs');
 
 // Init Logging 
-const logDir = 'logs'; //Move to config later
+const logDir = '../logs'; //Move to config later
 
 // Create the log directory if it does not exist
 if (!fs.existsSync(logDir)) {
@@ -11,7 +11,7 @@ if (!fs.existsSync(logDir)) {
 
 const tsFormat = () => (new Date()).toLocaleTimeString();
 
-const logger = new (winston.Logger)({
+const Logger = new (winston.Logger)({
   transports: [
     // colorize the output to the console
     new (winston.transports.Console)({
@@ -27,4 +27,4 @@ const logger = new (winston.Logger)({
   ]
 });
 
-module.exports = logger;
+module.exports = Logger;
