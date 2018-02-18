@@ -11,7 +11,7 @@ const bot = new discord.Client();
 const CommandManager = new (require('./Commands/CommandManager'))();
 CommandManager.setup();
 
-const logger = require('./logger');
+const logger = require('./Logger');
 
 // Logging
 bot.on('disconnect', function() {
@@ -41,12 +41,12 @@ bot.on('message', message => {
 
         let command = CommandManager.match(cmd);
             
-        if (command.default === true){
-            return message.channel.send(command.answer);
+        if (command == false) {
+            let cmdList = CommandManager.listCommands();
+            return message.channel.send(cmdList);
         }
-
-
-        // Each command is ran with messsage context and user input
+        
+        // Each command is run with messsage context and user input
         command.run(message, input)
             .then(response => {
                 message.channel.send(response);
@@ -54,7 +54,6 @@ bot.on('message', message => {
             .catch(err => {
                 logger.error(err);
             });
-            
     }
 });
 
