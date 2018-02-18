@@ -19,13 +19,33 @@ class Role extends Command
             if (this.roles[role] == undefined)
                 return reject("Unknown role");
 
-            author.addRole(this.roles[role])
-                .then(member => {
-                    resolve(role);
-                })
-                .catch(err => {
-                    reject(err);
-                });
+            let serverRole = this.roles[role];
+
+            // Remove existing roles if its not the expected role. 
+            // Make sure to use the module defined roles to avoid deletion of non-related roles (eg. @everyone).
+            Object.values(this.roles).forEach(existingRole => {
+                if (existingRole != serverRole) {
+                    if (author.roles.array().includes(existingRole)) {
+                        console.log("Role found: " + existingRole.name);
+                        author.removeRole(existingRole)
+                            .then(success => console.log("Role removed: " + existingRole.name))
+                            .catch(err => reject(err));
+                    }
+                }
+            });
+
+            // Add the server role if not exists.
+            if (!author.roles.array().includes(serverRole)) {
+                author.addRole(serverRole)
+                    .then(member => {
+                        resolve(role);
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
+            } else {
+                reject("Role already set!");
+            }
         });
     }
 
@@ -62,7 +82,7 @@ class Role extends Command
     }
 
     /**
-     * Response
+     * Handles the response of the run command on a specific role.
      *  
      * @param  {Member} author
      * @param  {Role} role 
