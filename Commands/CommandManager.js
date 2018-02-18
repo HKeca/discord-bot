@@ -20,12 +20,8 @@ class CommandManager {
      */
     match(query) {
         let command = false;
-        let defaultAnswer = {
-            default: true,
-            answer: 'Looks like you are lost, try the following commands:```\n'
-        }
+      
         this.commands.forEach((cmd) => {
-            defaultAnswer.answer += '!' + cmd.name+ ' - ' + cmd.cmdDescription + ' \n';
             if (cmd.name == query || cmd.alias.includes(query)) {
                 command = cmd;
             }
@@ -33,10 +29,25 @@ class CommandManager {
 
         if (command)
             return command;
-        else{
-            defaultAnswer.answer += '```'
-            return defaultAnswer;
-        }
+        else
+          return false;
+    }
+  
+    /**
+     * List all available commands.
+     * 
+     * @return {string} Response - A string containing all the available commands.
+     */
+    listCommands() {
+        let response = "Looks like you are lost, try the following commands:```\n";
+      
+       this.commands.forEach(cmd => {
+          response += `!${cmd.name} - ${cmd.description}\n`;
+       });
+        
+       response += "```";
+      
+       return response;
     }
 
     /**

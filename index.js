@@ -41,10 +41,11 @@ bot.on('message', message => {
 
         let command = CommandManager.match(cmd);
             
-        if (command.default === true){
-            return message.channel.send(command.answer);
+        if (command == false) {
+            let cmdList = CommandManager.listCommands();
+            return message.channel.send(cmdList);
         }
-
+        
         // Each command is run with messsage context and user input
         command.run(message, input)
             .then(response => {
