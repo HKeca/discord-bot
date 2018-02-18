@@ -69,7 +69,7 @@ class Role extends Command
 
         return new Promise((resolve, reject) => {
             if (role == undefined)
-                resolve('That role doesn\'t exist!');
+                reject('No role');
 
             this.tryAdd(author, role)
                 .then((role) => {
