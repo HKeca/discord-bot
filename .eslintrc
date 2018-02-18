@@ -1,0 +1,7 @@
+{
+  "extends": "willow",
+  "rules": {
+    "indent": "off",
+    "linebreak-style": "off"
+  }
+}

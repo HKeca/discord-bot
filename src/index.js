@@ -16,11 +16,11 @@ const Logger = require('./helpers/Logger.js');
 // Logging
 bot.on('disconnect', () => {
     Logger.info('LLC Bot has disconnected.')
-})
+});
 
 bot.on('error', (err) => {
     Logger.error(err)
-})
+});
 
 bot.on('ready', () => {
     Logger.log('info', 'LLC Bot has been successfully started');
