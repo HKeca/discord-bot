@@ -47,7 +47,7 @@ class CommandManager {
             let commandnum = 0;
 
             this.commands.forEach((cmd) => {
-                if (typeof embeds[embednum] !== Discord.RichEmbed) {
+                if (typeof embeds[embednum] !== 'object') {
                     embeds[embednum] = new Discord.RichEmbed();
                     embeds[embednum].setAuthor(bot.user.username);
                     embeds[embednum].setTitle(`Commands - Page ${embednum + 1}`);
@@ -57,7 +57,6 @@ class CommandManager {
                     embednum++;
                     commandnum = 0;
                 }
-
                 embeds[embednum].addField(cmd.name, cmd.description);
                 commandnum++;
             });
