@@ -27,7 +27,7 @@ bot.on('ready', () => {
 });
 
 // Message event
-bot.on('message', (message) => {
+bot.on('message', async (message) => {
     // ensure the bot doesn't respond to any bot messages (including itself)
     if (message.author.bot) return;
 
@@ -43,8 +43,11 @@ bot.on('message', (message) => {
     const commandExists = CommandManager.match(command);
             
     if (!commandExists) {
-        const cmdList = CommandManager.listCommands();
-        return message.channel.send(cmdList);
+        const cmdList = await CommandManager.listCommands(bot);
+        cmdList.forEach((embed) => {
+            message.channel.send(embed);
+        });
+        return;
     }
         
     // Each command is run with messsage context and user input

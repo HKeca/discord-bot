@@ -8,8 +8,8 @@ class Command
      */
     constructor(name, description, alias = []) {
         this.cmdName = name;
-        this.cmdAlias = alias;
         this.cmdDescription = description;
+        this.cmdAlias = alias;
     }
 
     /**
@@ -31,8 +31,8 @@ class Command
      * @param  {string} name
      */
     set name(name) {
-        if (name == null || name == "")
-            throw "Invalid argument";
+        if (name == null || name == '')
+            throw new Error('Invalid argument');
         this.cmdName = name;
     }
 
@@ -41,8 +41,8 @@ class Command
      * @param  {string} description
      */
     set description(description) {
-        if (description == null || description == "")
-            throw "Invalid argument";
+        if (description == null || description == '')
+            throw new Error('Invalid argument');
         this.cmdDescription = description;
     }
 
@@ -51,8 +51,8 @@ class Command
      * @param  {array} alias command aliases
      */
     set alias(alias) {
-        if (alias == null || alias == "")
-            throw "Invalid argument";
+        if (alias == null || alias == '')
+            throw new Error('Invalid argument');
         this.cmdAlias = alias;
     }
 
@@ -61,8 +61,8 @@ class Command
      * @return {string} command name
      */
     get name() {
-        if (this.cmdName == "")
-            throw "Name not initiated";
+        if (this.cmdName == '')
+            throw new Error('Name not initiated');
         return this.cmdName;
     }
 
@@ -71,8 +71,8 @@ class Command
      * @return {string} description
      */
     get description() {
-        if (this.cmdDescription == "")
-            throw "Description not initiated";
+        if (this.cmdDescription == '')
+            throw new Error('Description not initiated');
         return this.cmdDescription;
     }
 
@@ -82,7 +82,7 @@ class Command
      */
     get alias() {
         if (this.cmdAlias == null)
-            throw "Aliases not initiated";
+            throw new Error('Aliases not initiated');
         return this.cmdAlias;
     }
 }

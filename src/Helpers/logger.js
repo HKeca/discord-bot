@@ -1,8 +1,11 @@
 const winston = require('winston');
 const fs = require('fs');
 
-// Init Logging 
-const logDir = '../logs'; //Move to config later
+// Datetime
+const date = new Date();
+
+// Init Logging
+const logDir = '../logs'; // Move to config later
 
 // Create the log directory if it does not exist
 if (!fs.existsSync(logDir)) {
@@ -20,7 +23,7 @@ const Logger = new (winston.Logger)({
         level: 'info'
     }),
     new (winston.transports.File)({
-        filename: `${logDir}/bot_output.log`,
+        filename: `${logDir}/bot_output_${date.getMonth()}_${date.getDay()}_${date.getFullYear()}.log`,
         timestamp: tsFormat,
         level: 'debug'
     })
