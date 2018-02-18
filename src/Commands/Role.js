@@ -55,9 +55,9 @@ class Role extends Command
      * @param  {string} command user input
      * @return {Promise}
      */
-    run(message, command) {
-        // Expecting a string "role [role]"
-        const role = command.split(' ')[1];
+    run(message, args = []) {
+        // Expecting arguments ['role']
+        const role = args[0];
 
         const author = message.member;
 
