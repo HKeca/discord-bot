@@ -1,60 +1,58 @@
 // Import discord.js module
-const discord = require('discord.js');
+const Discord = require('discord.js');
 
 // Require Config
 const config = require('./config.json');
 
 // Create an instance of Discord that will use to control the bot
-const bot = new discord.Client();
+const bot = new Discord.Client();
 
 // Command Manager
-const CommandManager = new (require('./Commands/CommandManager'))();
+const CommandManager = new (require('./Commands/CommandManager.js'))();
 CommandManager.setup();
 
-const logger = require('./Logger');
+const logger = require('./helpers/logger.js');
 
 // Logging
-bot.on('disconnect', function() {
-    logger.info('LLC Bot has Disconnected.')
+bot.on('disconnect', () => {
+    logger.info('LLC Bot has disconnected.')
 })
 
-bot.on('error', function(err) {
+bot.on('error', (err) => {
     logger.error(err)
 })
 
 bot.on('ready', () => {
-    logger.log('info', 'LLC Bot has been Sucessfully Started');
+    logger.log('info', 'LLC Bot has been successfully started');
 });
 
 // Message event
-bot.on('message', message => {
-    // So the bot doesn't reply to itself
+bot.on('message', (message) => {
+    // ensure the bot doesn't respond to any bot messages (including itself)
     if (message.author.bot) return;
 
-    // Check if the message starts with the prefix
-    if (message.content.indexOf(config.prefix) === 0) {
-        // user input
-        let input = message.content.substring(1).toLowerCase();
+    // check if sent message starts with the prefix
+    if (message.content.indexOf(config.prefix) !== 0) return;
 
-        // Command without params
-        let cmd = input.split(' ')[0];
+    // user input
+    const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
 
-        let command = CommandManager.match(cmd);
+    // command without params
+    const command = args.shift().toLowerCase();
+
+    const commandExists = CommandManager.match(command);
             
-        if (command == false) {
-            let cmdList = CommandManager.listCommands();
-            return message.channel.send(cmdList);
-        }
-        
-        // Each command is run with messsage context and user input
-        command.run(message, input)
-            .then(response => {
-                message.channel.send(response);
-            })
-            .catch(err => {
-                logger.error(err);
-            });
+    if (!commandExists) {
+        const cmdList = CommandManager.listCommands();
+        return message.channel.send(cmdList);
     }
+        
+    // Each command is run with messsage context and user input
+    command.run(message, args).then((response) => {
+        message.channel.send(response);
+    }).catch((err) => {
+        logger.error(err);
+    });
 });
 
 // Run bot.
