@@ -27,11 +27,8 @@ class CommandManager {
                 command = cmd;
             }
         });
-
-        if (command)
-            return command;
-        else
-            return command;
+        
+        return command;
     }
   
     /**
