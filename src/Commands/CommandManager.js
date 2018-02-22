@@ -1,6 +1,7 @@
 const Role = new (require('./Role'));
 const Twitch = new (require('./Twitch'));
 const Projects = new (require('./Projects'));
+const Discord = require('discord.js');
 
 class CommandManager {
     constructor() {
@@ -26,28 +27,38 @@ class CommandManager {
                 command = cmd;
             }
         });
-
-        if (command)
-            return command;
-        else
-          return false;
+        
+        return command;
     }
   
     /**
      * List all available commands.
-     * 
+     *
+     * @param  {Discord.Client} Bot client - for username, avatar, etc.
      * @return {string} Response - A string containing all the available commands.
      */
-    listCommands() {
-        let response = "Looks like you are lost, try the following commands:```\n";
-      
-       this.commands.forEach(cmd => {
-          response += `!${cmd.name} - ${cmd.description}\n`;
-       });
-        
-       response += "```";
-      
-       return response;
+    listCommands(bot) {
+        return new Promise((resolve) => {
+            const embeds = [];
+            let embednum = 0;
+            let commandnum = 0;
+
+            this.commands.forEach((cmd) => {
+                if (typeof embeds[embednum] !== 'object') {
+                    embeds[embednum] = new Discord.RichEmbed();
+                    embeds[embednum].setAuthor(bot.user.username);
+                    embeds[embednum].setTitle(`Commands - Page ${embednum + 1}`);
+                }
+
+                if (commandnum == 25) {
+                    embednum++;
+                    commandnum = 0;
+                }
+                embeds[embednum].addField(cmd.name, cmd.description);
+                commandnum++;
+            });
+            resolve(embeds);
+        });
     }
 
     /**
