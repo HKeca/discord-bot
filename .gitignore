@@ -61,4 +61,4 @@ typings/
 .next
 
 # LLC Config
-config.json
+src/config.json

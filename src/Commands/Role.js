@@ -9,6 +9,29 @@ class Role extends Command
     setup() {}
 
     /**
+     * Remove llc roles
+     * @param  {Member} author
+     * @return {Promise}
+     */
+    cleanRoles(author) {
+        let roles = author.roles.array();
+
+        let llcRoles = roles.filter((role) => {
+            return this.roles[role.name] !== undefined;
+        });
+
+        return new Promise((resolve, reject) => {
+            author.removeRoles(llcRoles)
+                .then(result => {
+                    resolve(result);
+                })
+                .catch(err => {
+                    reject(err);
+                });
+        });
+    }
+
+    /**
      * Add new role
      * @param  {Member} author
      * @param  {Role} role
@@ -19,33 +42,21 @@ class Role extends Command
             if (this.roles[role] == undefined)
                 return reject('Unknown role');
 
-            const serverRole = this.roles[role];
+            const requestedRole = this.roles[role];
 
-            // Remove existing roles if its not the expected role.
-            // Make sure to use the module defined roles to avoid deletion of non-related roles (eg. @everyone).
-            Object.values(this.roles).forEach((existingRole) => {
-                if (existingRole != serverRole) {
-                    if (author.roles.array().includes(existingRole)) {
-                        console.log('Role found: ' + existingRole.name);
-                        author.removeRole(existingRole)
-                            .then(() => console.log('Role removed: ' + existingRole.name))
-                            .catch((err) => reject(err));
-                    }
-                }
-            });
+            if (author.roles.array().includes(requestedRole))
+                return reject('Role already set');
 
-            // Add the server role if not exists.
-            if (!author.roles.array().includes(serverRole)) {
-                author.addRole(serverRole)
-                    .then(() => {
-                        resolve(role);
-                    })
-                    .catch((err) => {
-                        reject(err);
-                    });
-            } else {
-                reject('Role already set!');
-            }
+            this.cleanRoles(author)
+                .then(() => {
+                    return author.addRole(requestedRole);
+                })
+                .then(() => {
+                    resolve(requestedRole);
+                })
+                .catch(err => {
+                    reject(err);
+                });
         });
     }
 
@@ -66,7 +77,7 @@ class Role extends Command
             backend: message.guild.roles.find('name', 'backend'),
             fullstack: message.guild.roles.find('name', 'fullstack')
         };
-
+        
         return new Promise((resolve, reject) => {
             if (role == undefined)
                 reject('No role');

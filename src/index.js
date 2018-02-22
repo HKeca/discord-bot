@@ -41,8 +41,7 @@ bot.on('message', async (message) => {
     const command = args.shift().toLowerCase();
     
     const cmdList = await CommandManager.listCommands(bot);
-    console.log(command);
-    console.log(args);
+
     if (CommandManager.match(command)) {
         CommandManager.match(command).run(message, args).then((response) => {
             return message.channel.send(response);
